@@ -59,7 +59,7 @@ class PriceComputation
             $current = $current->modify('+1 minute');
         }
 
-        return $totalPrice;
+        return round($totalPrice, 2);
     }
 
 

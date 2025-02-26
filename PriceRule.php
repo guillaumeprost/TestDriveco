@@ -23,13 +23,11 @@ class PriceRule
                 $this->priority = $value;
             }
         }
-    )
-    {
-    }
+    ){}
 
     public function appliesTo(\DateTimeImmutable $date, int $minuteOfDay): bool
     {
-        $day = (int)$date->format('N'); // 1 = lundi, …, 7 = dimanche
+        $day = (int)$date->format('N');
         if ($day < $this->weekDayFrom || $day > $this->weekDayTo) {
             return false;
         }
