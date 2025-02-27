@@ -1,7 +1,7 @@
 <?php
 require_once 'asserts.php';
 
-echo "Starting test ..." . PHP_EOL;
+echo "Starting tests ..." . PHP_EOL;
 
 //Tests
 testOnePriceRule();
@@ -20,8 +20,8 @@ function testOnePriceRule(): void
         require_once 'PriceComputation.php';
 
         $computation = new PriceComputation()
-            ->from(new \DateTimeImmutable('2024/09/02 2am'))
-            ->to(new \DateTimeImmutable('2024/09/02 4am'))
+            ->setFrom(new \DateTimeImmutable('2024/09/02 2am'))
+            ->setTo(new \DateTimeImmutable('2024/09/02 4am'))
             ->addRule(new PriceRule(1, 7, 0, 1440, 0.24, 0));
 
         $expected = round(120 * 0.24, 2);
@@ -41,8 +41,8 @@ function testTwoOverlappingPriceRule(): void{
 
     try {
         $computation = new PriceComputation()
-            ->from(new \DateTimeImmutable('2024/09/02 2am'))
-            ->to(new \DateTimeImmutable('2024/09/02 4am'))
+            ->setFrom(new \DateTimeImmutable('2024/09/02 2am'))
+            ->setTo(new \DateTimeImmutable('2024/09/02 4am'))
             ->addRule(new PriceRule(1, 7, 0, 240, 0.24, 0))
             ->addRule(new PriceRule(1, 7, 210, 240, 0.4, 1));
 
@@ -60,8 +60,8 @@ function testTwoOverlappingPriceRule(): void{
 function testTwoNotOverlapingPriceRule(): void{
     try {
         $computation = new PriceComputation()
-            ->from(new \DateTimeImmutable('2024/09/02 2am'))
-            ->to(new \DateTimeImmutable('2024/09/02 4am'))
+            ->setFrom(new \DateTimeImmutable('2024/09/02 2am'))
+            ->setTo(new \DateTimeImmutable('2024/09/02 4am'))
             ->addRule(new PriceRule(1, 7, 0, 180, 0.24, 0))
             ->addRule(new PriceRule(1, 7, 180, 240, 0.4, 1));
 
@@ -82,8 +82,8 @@ function testMultipleDaysPriceRule(): void{
 
     try {
         $computation = new PriceComputation()
-            ->from(new DateTimeImmutable('2024/09/02 2am'))
-            ->to(new DateTimeImmutable('2024/09/06 2am'))
+            ->setFrom(new DateTimeImmutable('2024/09/02 2am'))
+            ->setTo(new DateTimeImmutable('2024/09/06 2am'))
             ->addRule(new PriceRule(1, 7, 0, 1440, 0.24, 0));
 
         $expected = round((1440 * 4) * 0.24, 2);
@@ -106,8 +106,8 @@ function testMultipleDaysThroughWeekPriceRule(): void{
         $rule = new PriceRule(1, 7, 0, 1440, 0.5, 0);
 
         $computation = new PriceComputation()
-            ->from(new DateTimeImmutable('2024/09/02 2am'))
-            ->to(new DateTimeImmutable('2024/09/09 2am'))
+            ->setFrom(new DateTimeImmutable('2024/09/02 2am'))
+            ->setTo(new DateTimeImmutable('2024/09/09 2am'))
             ->addRule(new PriceRule(1, 7, 0, 1440, 0.24, 0))
             ->addRule(new PriceRule(6, 7, 0, 1440, 0.18, 99))
             ;
@@ -129,8 +129,8 @@ function testWrongDates(): void{
         require_once 'PriceComputation.php';
 
         $computation = new PriceComputation()
-            ->from(new \DateTimeImmutable('2024/19/02 2am'))
-            ->to(new \DateTimeImmutable('2024/09/02 4am'))
+            ->setFrom(new \DateTimeImmutable('2024/19/02 2am'))
+            ->setTo(new \DateTimeImmutable('2024/09/02 4am'))
             ->addRule(new PriceRule(1, 7, 0, 1440, 0.24, 0));
 
         $expected = round(120 * 0.24, 2);
@@ -152,8 +152,8 @@ function testWrongOrderDates(): void{
         require_once 'PriceComputation.php';
 
         $computation = new PriceComputation()
-            ->from(new \DateTimeImmutable('2024/09/02 2am'))
-            ->to(new \DateTimeImmutable('2024/09/01 4am'))
+            ->setFrom(new \DateTimeImmutable('2024/09/02 2am'))
+            ->setTo(new \DateTimeImmutable('2024/09/01 4am'))
             ->addRule(new PriceRule(1, 7, 0, 1440, 0.24, 0));
 
         $expected = round(120 * 0.24, 2);
