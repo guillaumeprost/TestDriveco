@@ -1,5 +1,7 @@
 <?php
 
+namespace Entity;
+
 class PriceRule
 {
     public function __construct(

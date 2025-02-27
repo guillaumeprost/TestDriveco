@@ -1,8 +1,10 @@
 <?php
-
-require_once 'PriceRule.php';
-require_once 'PriceComputation.php';
+require_once 'Entity/PriceRule.php';
+require_once 'Entity/PriceComputation.php';
 require_once 'Services/CalculatePrices.php';
+
+use Entity\PriceComputation;
+use Entity\PriceRule;
 
 $computation = new PriceComputation();
 $computation

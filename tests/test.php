@@ -1,4 +1,8 @@
 <?php
+
+use Entity\PriceComputation;
+use Entity\PriceRule;
+
 require_once 'asserts.php';
 
 echo "Starting tests ..." . PHP_EOL;

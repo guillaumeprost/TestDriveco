@@ -1,5 +1,7 @@
 <?php
 
+namespace Entity;
+
 class PriceComputation
 {
     private ?\DateTimeImmutable $from = null;
@@ -8,23 +10,23 @@ class PriceComputation
     /** @var PriceRule[] */
     private array $rules = [];
 
-    public function getFrom(): ?DateTimeImmutable
+    public function getFrom(): ?\DateTimeImmutable
     {
         return $this->from;
     }
 
-    public function setFrom(?DateTimeImmutable $from): self
+    public function setFrom(?\DateTimeImmutable $from): self
     {
         $this->from = $from;
         return $this;
     }
 
-    public function getTo(): ?DateTimeImmutable
+    public function getTo(): ?\DateTimeImmutable
     {
         return $this->to;
     }
 
-    public function setTo(?DateTimeImmutable $to): self
+    public function setTo(?\DateTimeImmutable $to): self
     {
         $this->to = $to;
         return $this;

@@ -2,12 +2,15 @@
 
 namespace Services;
 
-require_once 'PriceRule.php';
-require_once 'PriceComputation.php';
+require_once 'Entity/PriceRule.php';
+require_once 'Entity/PriceComputation.php';
+
+use Entity\PriceComputation;
+use Entity\PriceRule;
 
 class CalculatePrices
 {
-    public function run(\PriceComputation $priceComputation): float
+    public function run(PriceComputation $priceComputation): float
     {
         if ($priceComputation->getFrom() === null || $priceComputation->getTo() === null) {
             throw new \Exception("dates must be defined");
@@ -23,12 +26,12 @@ class CalculatePrices
         while ($current < $priceComputation->getTo()) {
             $minuteOfDay = ((int)$current->format('G')) * 60 + (int)$current->format('i');
 
-            $applicableRules = array_filter($priceComputation->getRules(), function (\PriceRule $rule) use ($current, $minuteOfDay) {
+            $applicableRules = array_filter($priceComputation->getRules(), function (PriceRule $rule) use ($current, $minuteOfDay) {
                 return $rule->appliesTo($current, $minuteOfDay);
             });
 
             if (!empty($applicableRules)) {
-                usort($applicableRules, function (\PriceRule $firstRule, \PriceRule $secondRule) {
+                usort($applicableRules, function (PriceRule $firstRule, PriceRule $secondRule) {
                     return $secondRule->priority <=> $firstRule->priority;
                 });
                 $selectedRule = $applicableRules[0];
@@ -49,7 +52,7 @@ class CalculatePrices
     }
 
 
-    public function setDateFromConsole(\PriceComputation $priceComputation): void
+    public function setDateFromConsole(PriceComputation $priceComputation): void
     {
         echo "Enter start date (YYYY-MM-DD HH:MM): ";
         $fromInput = trim(fgets(STDIN));
