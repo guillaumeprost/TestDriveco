@@ -19,5 +19,5 @@ $computation
 $calculationService = new Services\CalculatePrices();
 $price = $calculationService->run($computation);
 
-echo sprintf("Le prix total pour votre recharge sera de %s€ \n", $price);
+echo sprintf("The total price for your electric recharge will be %s€ \n", $price);
 exit(0);

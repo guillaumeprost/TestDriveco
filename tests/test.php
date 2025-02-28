@@ -1,7 +1,12 @@
 <?php
 
+require_once 'Entity/PriceRule.php';
+require_once 'Entity/PriceComputation.php';
+require_once 'Services/CalculatePrices.php';
+
 use Entity\PriceComputation;
 use Entity\PriceRule;
+use Services\CalculatePrices;
 
 require_once 'asserts.php';
 
@@ -20,16 +25,14 @@ testWrongOrderDates();
 function testOnePriceRule(): void
 {
     try {
-        require_once 'PriceRule.php';
-        require_once 'PriceComputation.php';
-
+        $calculationService = new CalculatePrices();
         $computation = new PriceComputation()
             ->setFrom(new \DateTimeImmutable('2024/09/02 2am'))
             ->setTo(new \DateTimeImmutable('2024/09/02 4am'))
             ->addRule(new PriceRule(1, 7, 0, 1440, 0.24, 0));
 
         $expected = round(120 * 0.24, 2);
-        $result = $computation->run();
+        $result = $calculationService->run($computation, false);
 
         assertEqual($expected, $result, 'Test with one rule');
 
@@ -39,11 +42,10 @@ function testOnePriceRule(): void
     }
 }
 
-function testTwoOverlappingPriceRule(): void{
-    require_once 'PriceRule.php';
-    require_once 'PriceComputation.php';
-
+function testTwoOverlappingPriceRule(): void
+{
     try {
+        $calculationService = new CalculatePrices();
         $computation = new PriceComputation()
             ->setFrom(new \DateTimeImmutable('2024/09/02 2am'))
             ->setTo(new \DateTimeImmutable('2024/09/02 4am'))
@@ -51,7 +53,7 @@ function testTwoOverlappingPriceRule(): void{
             ->addRule(new PriceRule(1, 7, 210, 240, 0.4, 1));
 
         $expected = round((90 * 0.24) + (30 * 0.4), 2);
-        $result = $computation->run();
+        $result = $calculationService->run($computation, false);
 
         assertEqual($expected, $result, 'Test with two not overlapping prices');
 
@@ -61,8 +63,10 @@ function testTwoOverlappingPriceRule(): void{
     }
 }
 
-function testTwoNotOverlapingPriceRule(): void{
+function testTwoNotOverlapingPriceRule(): void
+{
     try {
+        $calculationService = new CalculatePrices();
         $computation = new PriceComputation()
             ->setFrom(new \DateTimeImmutable('2024/09/02 2am'))
             ->setTo(new \DateTimeImmutable('2024/09/02 4am'))
@@ -70,7 +74,7 @@ function testTwoNotOverlapingPriceRule(): void{
             ->addRule(new PriceRule(1, 7, 180, 240, 0.4, 1));
 
         $expected = round((60 * 0.24) + (60 * 0.4), 2);
-        $result = $computation->run();
+        $result = $calculationService->run($computation, false);
 
         assertEqual($expected, $result, 'Test with two not overlaping prices');
 
@@ -80,18 +84,17 @@ function testTwoNotOverlapingPriceRule(): void{
     }
 }
 
-function testMultipleDaysPriceRule(): void{
-    require_once 'PriceRule.php';
-    require_once 'PriceComputation.php';
-
+function testMultipleDaysPriceRule(): void
+{
     try {
+        $calculationService = new CalculatePrices();
         $computation = new PriceComputation()
             ->setFrom(new DateTimeImmutable('2024/09/02 2am'))
             ->setTo(new DateTimeImmutable('2024/09/06 2am'))
             ->addRule(new PriceRule(1, 7, 0, 1440, 0.24, 0));
 
         $expected = round((1440 * 4) * 0.24, 2);
-        $result = $computation->run();
+        $result = $calculationService->run($computation, false);
 
         assertEqual($expected, $result, 'Test multiple days price');
 
@@ -102,22 +105,18 @@ function testMultipleDaysPriceRule(): void{
 
 }
 
-function testMultipleDaysThroughWeekPriceRule(): void{
-    require_once 'PriceRule.php';
-    require_once 'PriceComputation.php';
-
+function testMultipleDaysThroughWeekPriceRule(): void
+{
     try {
-        $rule = new PriceRule(1, 7, 0, 1440, 0.5, 0);
-
+        $calculationService = new CalculatePrices();
         $computation = new PriceComputation()
             ->setFrom(new DateTimeImmutable('2024/09/02 2am'))
             ->setTo(new DateTimeImmutable('2024/09/09 2am'))
             ->addRule(new PriceRule(1, 7, 0, 1440, 0.24, 0))
-            ->addRule(new PriceRule(6, 7, 0, 1440, 0.18, 99))
-            ;
+            ->addRule(new PriceRule(6, 7, 0, 1440, 0.18, 99));
 
         $expected = round(((1440 * 5) * 0.24) + ((1440 * 2) * 0.18), 2);
-        $result = $computation->run();
+        $result = $calculationService->run($computation, false);
 
         assertEqual($expected, $result, 'Test multiple days throught week price');
 
@@ -127,47 +126,45 @@ function testMultipleDaysThroughWeekPriceRule(): void{
     }
 }
 
-function testWrongDates(): void{
+function testWrongDates(): void
+{
     try {
-        require_once 'PriceRule.php';
-        require_once 'PriceComputation.php';
-
+        $calculationService = new CalculatePrices();
         $computation = new PriceComputation()
             ->setFrom(new \DateTimeImmutable('2024/19/02 2am'))
             ->setTo(new \DateTimeImmutable('2024/09/02 4am'))
             ->addRule(new PriceRule(1, 7, 0, 1440, 0.24, 0));
 
         $expected = round(120 * 0.24, 2);
-        $result = $computation->run();
+        $result = $calculationService->run($computation, false);
 
         assertEqual($expected, $result, 'Test with wrong dates');
 
         echo "Test with wrong dates failed succeed" . PHP_EOL;
     } catch (Exception $e) {
-        if ($e instanceof DateMalformedStringException){
+        if ($e instanceof DateMalformedStringException) {
             echo "Test with wrong dates succeed" . PHP_EOL;
         }
     }
 }
 
-function testWrongOrderDates(): void{
+function testWrongOrderDates(): void
+{
     try {
-        require_once 'PriceRule.php';
-        require_once 'PriceComputation.php';
-
+        $calculationService = new CalculatePrices();
         $computation = new PriceComputation()
             ->setFrom(new \DateTimeImmutable('2024/09/02 2am'))
             ->setTo(new \DateTimeImmutable('2024/09/01 4am'))
             ->addRule(new PriceRule(1, 7, 0, 1440, 0.24, 0));
 
         $expected = round(120 * 0.24, 2);
-        $result = $computation->run();
+        $result = $calculationService->run($computation, false);
 
         assertEqual($expected, $result, 'Test with wrong dates order');
 
         echo "Test with wrong dates order failed succeed" . PHP_EOL;
     } catch (Exception $e) {
-        if ($e->getMessage() === 'start date must be less than end date'){
+        if ($e->getMessage() === 'start date must be less than end date') {
             echo "Test with wrong dates order succeed" . PHP_EOL;
         }
     }
